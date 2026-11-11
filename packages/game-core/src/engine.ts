@@ -1,4 +1,4 @@
-import { HOME, YARD } from "./board.js";
+import { HOME, YARD, toTrackSquare, isSafeSquare } from "./board.js";
 import type { GameState } from "./state.js";
 import { getLegalMoves } from "./moves.js";
 
@@ -27,22 +27,37 @@ export function applyMove(state: GameState, tokenIndex: number): GameState {
     throw new Error("Illegal move");
   }
 
-  const players = state.players.map((player, i) =>
-    i !== state.turn
-      ? player
-      : {
-          ...player,
-          tokens: player.tokens.map((progress, t) =>
-            t !== tokenIndex ? progress : progress === YARD ? 0 : progress + dice
-          ),
-        }
-  );
+  const mover = state.players[state.turn];
+  const from = mover.tokens[tokenIndex];
+  const to = from === YARD ? 0 : from + dice;
+  const landing = toTrackSquare(mover.color, to);
+  let captured = false;
 
-  const mover = players[state.turn];
-  if (mover.tokens.every((progress) => progress === HOME)) {
+  const players = state.players.map((player, i) => {
+    if (i === state.turn) {
+      return {
+        ...player,
+        tokens: player.tokens.map((p, t) => (t === tokenIndex ? to : p)),
+      };
+    }
+    if (landing === null || isSafeSquare(landing)) return player;
+
+    return {
+      ...player,
+      tokens: player.tokens.map((p) => {
+        if (toTrackSquare(player.color, p) === landing) {
+          captured = true;
+          return YARD;
+        }
+        return p;
+      }),
+    };
+  });
+
+  if (players[state.turn].tokens.every((p) => p === HOME)) {
     return { ...state, players, dice: null, phase: "finished", winner: mover.color };
   }
 
   const next: GameState = { ...state, players, dice: null, phase: "roll" };
-  return dice === 6 ? next : nextTurn(next);
+  return dice === 6 || captured ? next : nextTurn(next);
 }

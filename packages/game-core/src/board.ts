@@ -21,3 +21,10 @@ export function toTrackSquare(color: Color, progress: number): number | null {
   if (progress < 0 || progress > LAST_TRACK_PROGRESS) return null;
   return (START_SQUARE[color] + progress) % TRACK_LENGTH;
 }
+
+export const SAFE_SQUARES: ReadonlySet<number> = new Set([0, 8, 13, 21, 26, 34, 39, 47]);
+
+export function isSafeSquare(square: number): boolean {
+  return SAFE_SQUARES.has(square);
+}
+
