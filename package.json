@@ -6,7 +6,11 @@
     "apps/*",
     "packages/*"
   ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present"
+  },
   "devDependencies": {
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
   }
 }
