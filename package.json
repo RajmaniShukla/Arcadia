@@ -7,7 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "build:core": "npm run build -w @arcadia/game-core",
+    "dev:web": "npm run dev -w @arcadia/web"
   },
   "devDependencies": {
     "typescript": "^7.0.2",
