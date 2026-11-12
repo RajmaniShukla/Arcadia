@@ -17,3 +17,7 @@ export function getLegalMoves(state: GameState, dice: number): number[] {
 
   return legal;
 }
+/** Where a token ends up after moving: yard tokens enter at 0, others advance by the dice. */
+export function destination(progress: number, dice: number): number {
+  return progress === YARD ? 0 : progress + dice;
+}

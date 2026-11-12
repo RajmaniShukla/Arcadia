@@ -1,6 +1,6 @@
 import { HOME, YARD, toTrackSquare, isSafeSquare } from "./board.js";
 import type { GameState } from "./state.js";
-import { getLegalMoves } from "./moves.js";
+import { getLegalMoves, destination } from "./moves.js";
 
 function nextTurn(state: GameState): GameState {
   return {
@@ -29,7 +29,7 @@ export function applyMove(state: GameState, tokenIndex: number): GameState {
 
   const mover = state.players[state.turn];
   const from = mover.tokens[tokenIndex];
-  const to = from === YARD ? 0 : from + dice;
+  const to = destination(from, dice);
   const landing = toTrackSquare(mover.color, to);
   let captured = false;
 

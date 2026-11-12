@@ -1,4 +1,4 @@
-import { HOME, YARD, LAST_TRACK_PROGRESS, toTrackSquare } from "@arcadia/game-core";
+import { HOME, YARD, LAST_TRACK_PROGRESS, TOKENS_PER_PLAYER, toTrackSquare } from "@arcadia/game-core";
 import type { Color, GameState } from "@arcadia/game-core";
 
 export type Cell = readonly [col: number, row: number];
@@ -85,7 +85,7 @@ export function layoutTokens(game: GameState): TokenView[] {
     groups.set(key, [...(groups.get(key) ?? []), view]);
   }
 
-  return [...groups.values()].flatMap((group) =>
+  const spread = [...groups.values()].flatMap((group) =>
     group.length === 1
       ? group
       : group.map((view, i) => {
@@ -93,4 +93,9 @@ export function layoutTokens(game: GameState): TokenView[] {
           return { ...view, x: view.x + Math.cos(angle) * 0.18, y: view.y + Math.sin(angle) * 0.18 };
         })
   );
+
+  // Fixed order: if React moves these DOM nodes, CSS transitions restart and the glide breaks.
+  const order = (t: TokenView) =>
+    game.players.findIndex((p) => p.color === t.color) * TOKENS_PER_PLAYER + t.index;
+  return spread.sort((a, b) => order(a) - order(b));
 }

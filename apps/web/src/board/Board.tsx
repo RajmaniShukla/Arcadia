@@ -21,7 +21,7 @@ export default function Board({ game, legal, onTokenClick }: BoardProps) {
   const canClick = (t: TokenView) => t.color === currentColor && legal.includes(t.index);
 
   // Draw clickable tokens last so they sit on top of any stack.
-  const tokens = layoutTokens(game).sort((a, b) => Number(canClick(a)) - Number(canClick(b)));
+  const tokens = layoutTokens(game);
 
   return (
     <svg viewBox="0 0 15 15" width="100%" style={{ display: "block", maxWidth: 560, margin: "0 auto" }}>
@@ -74,21 +74,30 @@ export default function Board({ game, legal, onTokenClick }: BoardProps) {
       <polygon points="9,6 9,9 7.5,7.5" fill={FILL.yellow} />
       <polygon points="6,9 9,9 7.5,7.5" fill={FILL.blue} />
 
-      {tokens.map((t) => {
-        const clickable = canClick(t);
-        return (
-          <g
-            key={`${t.color}-${t.index}`}
-            onClick={clickable ? () => onTokenClick(t.index) : undefined}
-            style={{ cursor: clickable ? "pointer" : "default" }}
-          >
-            {clickable && (
-              <circle cx={t.x} cy={t.y} r="0.46" fill="transparent" stroke="#ff9800" strokeWidth="0.08" />
-            )}
-            <circle cx={t.x} cy={t.y} r="0.32" fill={FILL[t.color]} stroke="#222" strokeWidth="0.05" />
-          </g>
-        );
-      })}
+    {/* Visual layer: stable order, glides between positions. */}
+    {tokens.map((t) => (
+        <g
+          key={`${t.color}-${t.index}`}
+          style={{ transform: `translate(${t.x}px, ${t.y}px)`, transition: "transform 140ms linear" }}
+        >
+          <circle r="0.32" fill={FILL[t.color]} stroke="#222" strokeWidth="0.05" />
+        </g>
+      ))}
+
+      {/* Interaction layer: rings on top, so a click never lands on a token stacked above. */}
+      {tokens.filter(canClick).map((t) => (
+        <circle
+          key={`hit-${t.color}-${t.index}`}
+          cx={t.x}
+          cy={t.y}
+          r="0.46"
+          fill="transparent"
+          stroke="#ff9800"
+          strokeWidth="0.08"
+          style={{ cursor: "pointer" }}
+          onClick={() => onTokenClick(t.index)}
+        />
+      ))}
     </svg>
   );
 }
