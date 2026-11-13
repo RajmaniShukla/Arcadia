@@ -9,7 +9,8 @@
   "scripts": {
     "test": "npm run test --workspaces --if-present",
     "build:core": "npm run build -w @arcadia/game-core",
-    "dev:web": "npm run dev -w @arcadia/web"
+    "dev:web": "npm run dev -w @arcadia/web",
+    "dev:server": "npm run dev -w @arcadia/server"
   },
   "devDependencies": {
     "typescript": "^7.0.2",
