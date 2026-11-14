@@ -28,3 +28,14 @@ export function isSafeSquare(square: number): boolean {
   return SAFE_SQUARES.has(square);
 }
 
+const SEAT_LAYOUTS: Record<number, readonly Color[]> = {
+  2: ["red", "yellow"], // opposite corners
+  3: ["red", "green", "yellow"],
+  4: ["red", "green", "yellow", "blue"],
+};
+
+/** Which colors play for a given player count, or null if unsupported. */
+export function seatColors(playerCount: number): Color[] | null {
+  const layout = SEAT_LAYOUTS[playerCount];
+  return layout ? [...layout] : null;
+}

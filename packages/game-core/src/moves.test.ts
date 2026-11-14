@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createGame } from "./state.js";
-import { getLegalMoves, destination } from "./moves.js";
+import { getLegalMoves, destination, currentLegalMoves  } from "./moves.js";
 
 describe("getLegalMoves", () => {
   it("allows nothing when all tokens are in the yard and dice is not 6", () => {
@@ -29,5 +29,16 @@ describe("destination", () => {
 
   it("advances other tokens by the dice", () => {
     expect(destination(10, 4)).toBe(14);
+  });
+});
+
+describe("currentLegalMoves", () => {
+  it("is empty while waiting for a roll", () => {
+    expect(currentLegalMoves(createGame(["red", "green"]))).toEqual([]);
+  });
+
+  it("lists movable tokens once a dice value is waiting", () => {
+    const game = { ...createGame(["red", "green"]), dice: 6, phase: "move" as const };
+    expect(currentLegalMoves(game)).toEqual([0, 1, 2, 3]);
   });
 });

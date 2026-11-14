@@ -21,3 +21,8 @@ export function getLegalMoves(state: GameState, dice: number): number[] {
 export function destination(progress: number, dice: number): number {
   return progress === YARD ? 0 : progress + dice;
 }
+
+/** Legal token indexes for the current turn, or [] when no dice value is waiting. */
+export function currentLegalMoves(state: GameState): number[] {
+  return state.phase === "move" && state.dice !== null ? getLegalMoves(state, state.dice) : [];
+}
