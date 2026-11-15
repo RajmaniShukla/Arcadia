@@ -138,13 +138,15 @@ export function useRoom() {
     }
   }, []);
 
-  const leave = useCallback(() => {
-    saveSession(null);
-    setMe(null);
-    setSnapshot(null);
-    setError(null);
-    // A fresh connection is no longer in the room. (The seat stays taken on the server; see the gaps list.)
-    socketRef.current?.disconnect().connect();
+  const leave = useCallback(async () => {
+    try {
+      await socketRef.current?.emitWithAck("room:leave");
+    } finally {
+      saveSession(null);
+      setMe(null);
+      setSnapshot(null);
+      setError(null);
+    }
   }, []);
 
   return { status, restoring, me, snapshot, error, createRoom, joinRoom, roll, move, leave };

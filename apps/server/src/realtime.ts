@@ -31,6 +31,7 @@ export function attachRealtime(httpServer: HttpServer, rooms: Rooms) {
     const snapshot = rooms.snapshot(code);
     if (snapshot) io.to(code).emit("room:state", snapshot);
   }
+  rooms.subscribe(broadcast); // timer-driven changes (auto-play) reach the players too
 
   io.on("connection", (socket) => {
     async function enterRoom(ack: unknown, attempt: () => Ack<JoinedInfo>): Promise<void> {
@@ -106,6 +107,22 @@ export function attachRealtime(httpServer: HttpServer, rooms: Rooms) {
       if (code === undefined || seat === undefined) return;
       rooms.release(code, seat, socket.id);
       broadcast(code);
+    });
+
+    socket.on("room:leave", async (ack) => {
+      const { code, seat } = socket.data;
+      if (code === undefined || seat === undefined) {
+        reply(ack, fail("join a room first"));
+        return;
+      }
+      const result = rooms.leave(code, seat, socket.id);
+      if (result.ok) {
+        socket.data.code = undefined;
+        socket.data.seat = undefined;
+        await socket.leave(code);
+        broadcast(code); // everyone else sees the empty seat or the new bot
+      }
+      reply(ack, result);
     });
   });
 

@@ -5,6 +5,7 @@ export * from "./engine.js";
 export * from "./dice.js";
 export * from "./protocol.js";
 export * from "./diff.js";
+export * from "./bot.js";
 
 // export function rollDice(): number {
 //   return Math.floor(Math.random() * 6) + 1;

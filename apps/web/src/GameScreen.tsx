@@ -2,6 +2,7 @@ import type { GameState, JoinedInfo, RoomSnapshot } from "@arcadia/game-core";
 import Board from "./board/Board";
 import Dice from "./board/Dice";
 import { FILL } from "./board/colors";
+import { useCountdown } from "./useCountdown";
 
 interface GameScreenProps {
   snapshot: RoomSnapshot;
@@ -29,6 +30,8 @@ export default function GameScreen({
   const myTurn = !finished && game.turn === me.seat;
   const legal = myTurn && !blocked ? snapshot.legalMoves : [];
   const lastRoll = snapshot.lastRoll;
+  const secondsLeft = useCountdown(snapshot);
+  const currentSeat = snapshot.seats[game.turn];
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
@@ -57,6 +60,15 @@ export default function GameScreen({
             <p className="text-sm text-slate-500">
               {lastRoll ? `${lastRoll.color} rolled ${lastRoll.dice}` : "No rolls yet"}
             </p>
+            {!finished && !currentSeat.bot && secondsLeft !== null && (
+              <p
+                className={`text-sm font-medium ${
+                  secondsLeft <= 5 ? "text-red-600" : "text-slate-500"
+                }`}
+              >
+                ⏱ {secondsLeft}s left
+              </p>
+            )}
           </div>
         </section>
 
@@ -78,7 +90,8 @@ export default function GameScreen({
                 />
                 {isMe ? "You" : seat.color}
                 {!finished && seat.color === current.color && <span aria-label="current turn">▶</span>}
-                {!seat.connected && <span className="text-xs opacity-70">(away)</span>}
+                {seat.bot && <span className="text-xs opacity-70">(bot)</span>}
+                {!seat.bot && !seat.connected && <span className="text-xs opacity-70">(away)</span>}
               </li>
             );
           })}

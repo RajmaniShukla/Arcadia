@@ -5,6 +5,7 @@ export interface SeatView {
   color: Color;
   occupied: boolean;
   connected: boolean;
+  bot: boolean; // the player left and the server plays for them
 }
 
 /** Everything a client needs to draw a room. Never contains secrets. */
@@ -14,6 +15,7 @@ export interface RoomSnapshot {
   game: GameState | null; // null until every seat is taken
   legalMoves: number[];
   lastRoll: { color: Color; dice: number } | null;
+  turnMsLeft: number | null; // time left for the current decision; null when no clock is running
 }
 
 export interface JoinedInfo {
@@ -31,6 +33,7 @@ export interface ClientToServerEvents {
   "room:rejoin": (req: { code: string; token: string }, ack: (res: Ack<JoinedInfo>) => void) => void;
   "game:roll": (ack: (res: Ack) => void) => void;
   "game:move": (req: { tokenIndex: number }, ack: (res: Ack) => void) => void;
+  "room:leave": (ack: (res: Ack) => void) => void;
 }
 
 export interface ServerToClientEvents {
