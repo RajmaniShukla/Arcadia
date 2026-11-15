@@ -1,14 +1,8 @@
 import { COLORS, START_SQUARE, isSafeSquare } from "@arcadia/game-core";
-import type { Color, GameState } from "@arcadia/game-core";
+import type { GameState } from "@arcadia/game-core";
 import { HOME_COLUMN, TRACK, YARD_ORIGIN, YARD_SLOTS, layoutTokens } from "./layout";
 import type { TokenView } from "./layout";
-
-const FILL: Record<Color, string> = {
-  red: "#e53935",
-  green: "#43a047",
-  yellow: "#fdd835",
-  blue: "#1e88e5",
-};
+import { FILL } from "./colors";
 
 interface BoardProps {
   game: GameState;
@@ -24,7 +18,7 @@ export default function Board({ game, legal, onTokenClick }: BoardProps) {
   const tokens = layoutTokens(game);
 
   return (
-    <svg viewBox="0 0 15 15" width="100%" style={{ display: "block", maxWidth: 560, margin: "0 auto" }}>
+    <svg viewBox="0 0 15 15" className="mx-auto block max-h-[75dvh] w-full max-w-[560px]">
       <rect width="15" height="15" fill="#fff" />
 
       {COLORS.map((color) => {

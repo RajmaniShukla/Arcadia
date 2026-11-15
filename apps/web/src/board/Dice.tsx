@@ -21,32 +21,16 @@ export default function Dice({ value, rolling, disabled, onRoll }: DiceProps) {
       onClick={onRoll}
       disabled={disabled}
       aria-label={`Dice showing ${value}. Press to roll.`}
-      style={{
-        width: 72,
-        height: 72,
-        padding: 8,
-        borderRadius: 14,
-        border: "2px solid #333",
-        background: "#fff",
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gridTemplateRows: "repeat(3, 1fr)",
-        cursor: disabled ? "default" : "pointer",
-        opacity: disabled && !rolling ? 0.55 : 1,
-        transform: rolling ? "rotate(8deg) scale(1.06)" : "none",
-        transition: "transform 80ms",
-      }}
+      className={`grid size-20 shrink-0 touch-manipulation grid-cols-3 grid-rows-3 rounded-2xl border-2 border-slate-800 bg-white p-2 transition-transform duration-75 ${
+        disabled && !rolling ? "opacity-50" : "cursor-pointer hover:bg-slate-50"
+      } ${rolling ? "rotate-6 scale-105" : ""}`}
     >
       {Array.from({ length: 9 }, (_, i) => (
         <span
           key={i}
-          style={{
-            placeSelf: "center",
-            width: 12,
-            height: 12,
-            borderRadius: "50%",
-            background: PIPS[value].includes(i) ? "#222" : "transparent",
-          }}
+          className={`size-3 place-self-center rounded-full ${
+            PIPS[value].includes(i) ? "bg-slate-800" : "bg-transparent"
+          }`}
         />
       ))}
     </button>

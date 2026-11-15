@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import Banner from "./ui/Banner";
+import Button from "./ui/Button";
 import GameScreen from "./GameScreen";
 import Lobby from "./Lobby";
 import WaitingRoom from "./WaitingRoom";
@@ -12,7 +14,7 @@ export default function App() {
 
   let screen: ReactNode;
   if (room.restoring) {
-    screen = <p>Restoring your game…</p>;
+    screen = <p className="text-slate-500">Restoring your game…</p>;
   } else if (!room.me || !view) {
     screen = <Lobby disabled={offline} onCreate={room.createRoom} onJoin={room.joinRoom} />;
   } else if (!view.game) {
@@ -33,27 +35,30 @@ export default function App() {
   }
 
   return (
-    <main style={{ padding: 16, fontFamily: "system-ui", maxWidth: 600, margin: "0 auto" }}>
-      <h1>Arcadia · Ludo</h1>
+    <div className="min-h-dvh bg-slate-100 text-slate-900">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-3 sm:p-6">
+        <header className="flex items-center justify-between gap-3">
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
+            Arcadia <span className="font-medium text-slate-400">· Ludo</span>
+          </h1>
+          {room.me && (
+            <Button variant="secondary" onClick={room.leave}>
+              Leave
+            </Button>
+          )}
+        </header>
 
-      {offline && (
-        <p role="status">
-          {room.status === "connecting" ? "Connecting to the server…" : "Connection lost, reconnecting…"}
-        </p>
-      )}
-      {room.error && (
-        <p role="alert" style={{ color: "#c62828" }}>
-          {room.error}
-        </p>
-      )}
+        {offline && (
+          <Banner tone="info">
+            {room.status === "connecting"
+              ? "Connecting to the server…"
+              : "Connection lost, reconnecting…"}
+          </Banner>
+        )}
+        {room.error && <Banner tone="error">{room.error}</Banner>}
 
-      {screen}
-
-      {room.me && (
-        <p>
-          <button onClick={room.leave}>Leave room</button>
-        </p>
-      )}
-    </main>
+        {screen}
+      </div>
+    </div>
   );
 }
